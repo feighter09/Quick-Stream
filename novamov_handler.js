@@ -138,15 +138,19 @@ var handle_final = function (data) {
 ////////////////////////////////////
 function generate_dl_req(base_url) {
 	var p = new promise.Promise();
+	debugger;
 	simple_get_request(base_url)
 	.then(function(err, data){
+		debugger;
 		return handle_first_to_second(data);
 	})
 	.then(function(err, data, json) {
+		debugger;
 		return handle_second_to_third(data, json);
 	})
 	.then(function(err, data){
 		var dl_req = handle_final(data);
+		debugger;
 		p.done(null, dl_req);
 	})
 	return p;
