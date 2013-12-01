@@ -1,22 +1,6 @@
 var promise = require('./promise.js')
 var http = require('http');
 var URL = require('url');
-////////////////////////////////////
-function generate_dl_req(base_url) {
-	var p = new promise.Promise();
-	simple_get_request(base_url)
-	.then(function(err, data){
-		return handle_first_to_second(data);
-	})
-	.then(function(err, data, json) {
-		return handle_second_to_third(data, json);
-	})
-	.then(function(err, data){
-		var dl_req = handle_final(data);
-		p.done(null, dl_req);
-	})
-	return p;
-}
 
 ////////////////////////////////////
 var basic_handler = function (callback) {
@@ -134,10 +118,12 @@ var handle_second_to_third = function (data, json) {
 	var p = new promise.Promise(); 
 	var error_url = parse_second_response(data);
 	json["error_url"] = error_url;
-	var options = create_third_request(json);
-    http.request(options, basic_handler(function(data){
+	var options = create_third_request(json);    
+    
+    http_request(options)
+    .then(function(err, data){
     	p.done(null, data);
-    })).end();
+    });
     return p; 
 }
 
@@ -149,7 +135,22 @@ var handle_final = function (data) {
 	return URL.parse(dl_url);
 }
 
-
+////////////////////////////////////
+function generate_dl_req(base_url) {
+	var p = new promise.Promise();
+	simple_get_request(base_url)
+	.then(function(err, data){
+		return handle_first_to_second(data);
+	})
+	.then(function(err, data, json) {
+		return handle_second_to_third(data, json);
+	})
+	.then(function(err, data){
+		var dl_req = handle_final(data);
+		p.done(null, dl_req);
+	})
+	return p;
+}
 function gen_all_dl_req(num_req, base_url) {
 	var p = new promise.Promise();
 	var i = 0;
@@ -178,10 +179,3 @@ function generator(num_req, base_url, callback) {
 //main(5, "http://embed.novamov.com/embed.php?v=f13203eea66a2&height=&width=", console.log);
 
 module.exports.generator = generator;
-
-
-/*
-
-'\t\t\tflashvars.file="f13203eea66a2";',
-  '\t\t\tflashvars.filekey="173.161.237.230-8988c1fb5eca5d807e0a26cd902ecd4e-";'
-*/

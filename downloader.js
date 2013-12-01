@@ -1,34 +1,6 @@
-/*
-//common
-input general link
-input X num
-input file_output
-
-//common
-decide which logic to use
-  switch case
-  
-
-//* different
-generate X num of independent download requests
-  different for each website
-  two inputs: (gen_link), (X num)
-  output: (array of download request)
-
-//common
-download each request simultaneously, and join to single file
-  two input: (array of download request), (output_file)
-  output: (void/status)
-
-//common
-output file.
-
-*/
-
 var http = require('http');
 var URL = require('url');
 var fs = require("fs");
-
 
 var createDownloadRequest = function(options, start, end, total_size) {
   if (!options["headers"]) {
@@ -41,7 +13,7 @@ var createDownloadRequest = function(options, start, end, total_size) {
 var startDownlods = function(fd, size_bytes, dl_reqs_arr) {
   var start = Math.floor(size_bytes/2);
   var end = Math.floor(size_bytes);
-  for(var i=1; i<dl_reqs_arr.length; i++) {
+  for(var i=0; i<dl_reqs_arr.length; i++) {
     var dl_req = dl_reqs_arr[i];
     if (i == (dl_reqs_arr.length - 1)) start = 0;
     var options = createDownloadRequest(dl_req, start, end);
@@ -84,14 +56,6 @@ var download_all = function(filename, dl_reqs_arr) {
 }
 
 
-var url = "http://download.blender.org/peach/bigbuckbunny_movies/BigBuckBunny_640x360.m4v";
-var options = URL.parse(url);
-var dl_reqs_arr = [
-  options, options, options, options, options
-]
-
 module.exports.start_download = download_all
 
 //download_all("video.m4v", dl_reqs_arr);
-
-
